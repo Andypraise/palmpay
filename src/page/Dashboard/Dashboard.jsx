@@ -22,7 +22,7 @@ function Dashboard({ setPage }) {
         <p className="text-sm">Wallet Balance</p>
         <div className="flex justify-between items-center mt-2">
           <h2 className="text-3xl font-bold">
-            {showBalance ? "₦12,450.00" : "******"}
+            {showBalance ? "₦5,450.00" : "******"}
           </h2>
           <button
             onClick={() => setShowBalance(!showBalance)}
