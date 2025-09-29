@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Eye, EyeOff, LogOut } from "lucide-react"; 
+import React, { useState, useEffect } from "react";
+import { Eye, EyeOff, LogOut, Wifi } from "lucide-react"; 
 import profileImage from "../../assets/image3.png";
 import customerImage from "../../assets/image4.png";
 import codeImage from "../../assets/image12.png";
@@ -15,37 +15,39 @@ import tranImage from "../../assets/image17.png";
 function Dashboard({ setPage, currentPage }) {
   const [showBalance, setShowBalance] = useState(true);
   const [user, setUser] = useState(null);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // logout modal
-  const fileInputRef = useRef(null); // hidden file input ref
+  const [network, setNetwork] = useState(""); // Airtime network
 
+  // Load user from localStorage
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
+
+      // If phone exists, detect network immediately
+      if (storedUser.phone) {
+        setNetwork(detectNetwork(storedUser.phone));
+      }
     }
   }, []);
 
-  // Handle profile picture change
-  const handleProfileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const updatedUser = { ...user, profilePic: reader.result };
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Logout function
+  // Logout Function
   const handleLogout = () => {
     localStorage.removeItem("user");
     setPage("login");
-    setShowLogoutModal(false);
   };
 
+  // Detect network function
+  const detectNetwork = (phone) => {
+    if (!phone) return "";
+    const prefix = phone.slice(0, 4);
+    if (/^(0803|0806|0703|0706|0813|0816|0810|0814|0903|0906)$/.test(prefix)) return "MTN";
+    if (/^(0805|0807|0811|0815|0905|0915)$/.test(prefix)) return "GLO";
+    if (/^(0802|0808|0708|0701|0812|0902|0907|0912)$/.test(prefix)) return "Airtel";
+    if (/^(0809|0817|0818|0909|0908)$/.test(prefix)) return "9mobile";
+    return "";
+  };
+
+  // Quick Actions
   const actions = [
     { name: "Airtime", image: timeImage, page: "airtime" },
     { name: "Data", image: dataImage, page: "data" },
@@ -55,6 +57,7 @@ function Dashboard({ setPage, currentPage }) {
     { name: "PulsePay", image: withImage, page: "pulsepay" },
   ];
 
+  // Bottom Nav
   const navItems = [
     { name: "Home", image: homeImage, page: "dashboard" },
     { name: "Transactions", image: tranImage, page: "transactions" },
@@ -62,23 +65,14 @@ function Dashboard({ setPage, currentPage }) {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 relative">
+    <div className="bg-gray-100 min-h-screen p-4">
       {/* Navbar */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          {/* Profile Image */}
           <img
             src={user?.profilePic || profileImage}
             alt="profile"
             className="w-[40px] h-[40px] rounded-full object-cover cursor-pointer"
-            onClick={() => fileInputRef.current.click()} // trigger file input
-          />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleProfileChange}
           />
           <h1 className="text-[20px] ml-2">
             Hi, {user?.name || user?.phone || "User"}
@@ -90,9 +84,8 @@ function Dashboard({ setPage, currentPage }) {
           <img src={codeImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
           <img src={notificationImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
 
-          {/* Logout Button */}
           <button
-            onClick={() => setShowLogoutModal(true)}
+            onClick={handleLogout}
             className="flex items-center gap-1 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
           >
             <LogOut className="w-4 h-4" /> Logout
@@ -111,11 +104,7 @@ function Dashboard({ setPage, currentPage }) {
             onClick={() => setShowBalance(!showBalance)}
             className="ml-3 p-2 bg-purple-600 rounded-full"
           >
-            {showBalance ? (
-              <EyeOff className="w-5 h-5 text-white" />
-            ) : (
-              <Eye className="w-5 h-5 text-white" />
-            )}
+            {showBalance ? <EyeOff className="w-5 h-5 text-white" /> : <Eye className="w-5 h-5 text-white" />}
           </button>
         </div>
       </div>
@@ -126,11 +115,19 @@ function Dashboard({ setPage, currentPage }) {
         {actions.map((action, index) => (
           <div
             key={index}
-            onClick={() => setPage(action.page)}
+            onClick={() => {
+              setPage(action.page);
+            }}
             className="cursor-pointer rounded-xl p-4 flex flex-col items-center hover:bg-purple-50 transition"
           >
             <img src={action.image} alt={action.name} className="w-[36px] h-[36px] mb-2" />
             <p className="text-sm font-medium">{action.name}</p>
+            {/* Show network icon for Airtime */}
+            {action.name === "Airtime" && network && (
+              <div className="mt-2 flex items-center text-xs text-gray-700 gap-1">
+                <Wifi size={16} /> {network}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -142,44 +139,14 @@ function Dashboard({ setPage, currentPage }) {
             key={index}
             onClick={() => setPage(item.page)}
             className={`flex flex-col items-center text-xs ${
-              currentPage === item.page
-                ? "text-purple-700 font-bold"
-                : "text-gray-600"
+              currentPage === item.page ? "text-purple-700 font-bold" : "text-gray-600"
             }`}
           >
-            {item.image ? (
-              <img src={item.image} alt={item.name} className="w-[24px] h-[24px] mb-1" />
-            ) : (
-              <span className="text-lg mb-1">{item.icon}</span>
-            )}
+            {item.image ? <img src={item.image} alt={item.name} className="w-[24px] h-[24px] mb-1" /> : <span className="text-lg mb-1">{item.icon}</span>}
             <span>{item.name}</span>
           </button>
         ))}
       </div>
-
-      {/* Logout Modal */}
-      {showLogoutModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[300px] text-center">
-            <h2 className="text-lg font-semibold mb-4">Confirm Logout</h2>
-            <p className="mb-6">Are you sure you want to logout?</p>
-            <div className="flex justify-around">
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setShowLogoutModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

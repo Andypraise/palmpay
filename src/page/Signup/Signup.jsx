@@ -23,14 +23,19 @@ function Signup({ setPage }) {
     reader.readAsDataURL(file);
   };
 
+  // ✅ Valid Nigerian phone numbers regex (MTN, Glo, Airtel, 9mobile)
+  const phoneRegex = /^(0703|0706|0803|0806|0810|0813|0814|0816|0903|0906|0913|0705|0805|0815|0811|0905|0701|0708|0802|0808|0812|0901|0902|0904|0809|0817|0818|0909|0908)[0-9]{7}$/;
+
   const handleSignup = () => {
     if (!email || !phone || !password) {
       setMessage("Please fill in all fields");
       return;
     }
 
-    if (phone.length !== 11) {
-      setMessage("Phone number must be 11 digits");
+    if (!phoneRegex.test(phone)) {
+      setMessage(
+        "Invalid phone number. Must be 11 digits and a valid MTN, Glo, Airtel, or 9mobile number."
+      );
       return;
     }
 
@@ -63,9 +68,9 @@ function Signup({ setPage }) {
       <div className="w-full flex items-center">
         <button
           onClick={() => setPage("login")}
-          className="text-2xl text-gray-700"
+          className="text-2xl text-gray-700 cursor-pointer"
         >
-          ←
+          ←Back
         </button>
       </div>
 
@@ -75,13 +80,16 @@ function Signup({ setPage }) {
       </div>
 
       {/* Title */}
-      <h2 className="text-xl text-gray-800 mt-2">Let&apos;s Create an Account</h2>
+      <h2 className="text-xl text-gray-800 mt-2">Let's Create an Account</h2>
 
-      {/* ✅ Profile Picture Upload FIRST (Facebook style) */}
+      {/* ✅ Profile Picture Upload */}
       <div className="mt-6 flex justify-center">
         <div className="relative w-28 h-28 group">
           <img
-            src={profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+            src={
+              profilePic ||
+              "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+            }
             alt="Profile Preview"
             className="w-28 h-28 rounded-full object-cover border-2 border-gray-300 cursor-pointer"
             onClick={() => fileInputRef.current.click()}
@@ -91,7 +99,7 @@ function Signup({ setPage }) {
           <div
             onClick={() => fileInputRef.current.click()}
             className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center 
-              opacity-0 group-hover:opacity-100 transition"
+              opacity-0 group-hover:opacity-100 transition "
           >
             <Camera className="w-6 h-6 text-white" />
           </div>
@@ -128,7 +136,9 @@ function Signup({ setPage }) {
           <input
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) =>
+              setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))
+            }
             placeholder="Enter phone number"
             className="ml-3 flex-1 outline-none text-gray-800 placeholder-gray-400"
             maxLength={11}
@@ -168,7 +178,7 @@ function Signup({ setPage }) {
         <button
           onClick={handleSignup}
           disabled={loading}
-          className={`w-full h-[50px] rounded-md text-white font-semibold text-lg transition 
+          className={`w-full h-[50px] rounded-md text-white font-semibold text-lg transition cursor-pointer
           ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6205b3] hover:bg-[#4e0490]"}`}
         >
           {loading ? "Please wait..." : "Sign Up"}
