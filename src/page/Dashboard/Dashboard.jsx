@@ -19,12 +19,26 @@ function Dashboard({ setPage, currentPage }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+  // Text slider state
+  const ads = [
+    "🎯 Bet on your favorite sports now with Bet9ja! Win big today!",
+    "₿ Buy and sell Bitcoin easily on Luno. Start trading now!",
+    "⚡ Fast transactions with PulsePay. Send money instantly!",
+    "💰 Take a loan quickly and repay at your convenience!"
+  ];
+  const [currentAd, setCurrentAd] = useState(0);
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
       if (storedUser.phone) setNetwork(detectNetwork(storedUser.phone));
     }
+
+    const interval = setInterval(() => {
+      setCurrentAd(prev => (prev + 1) % ads.length);
+    }, 4000); // change ad every 4 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const detectNetwork = (phone) => {
@@ -77,7 +91,6 @@ function Dashboard({ setPage, currentPage }) {
       {/* Navbar */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4 relative">
-          {/* Profile */}
           <img
             src={user.profilePic || profileImage}
             alt="profile"
@@ -98,7 +111,6 @@ function Dashboard({ setPage, currentPage }) {
             <p className="text-sm text-gray-600">Welcome back!</p>
           </div>
 
-          {/* Profile dropdown */}
           {showProfileMenu && (
             <div className="absolute top-14 left-0 bg-white border rounded shadow p-3 w-44 z-50 flex flex-col">
               <button
@@ -123,7 +135,6 @@ function Dashboard({ setPage, currentPage }) {
           )}
         </div>
 
-        {/* Action icons */}
         <div className="flex items-center gap-3">
           <img src={customerImage} alt="" className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer" />
           <img src={codeImage} alt="" className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer" />
@@ -155,7 +166,7 @@ function Dashboard({ setPage, currentPage }) {
       )}
 
       {/* Balance Card */}
-      <div className="bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-xl p-6 mb-8 shadow-lg">
+      <div className="bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-xl p-6 mb-4 shadow-lg">
         <p className="text-sm">Wallet Balance</p>
         <div className="flex justify-between items-center mt-2">
           <h2 className="text-3xl font-bold">{showBalance ? "₦5,450.00" : "******"}</h2>
@@ -168,9 +179,14 @@ function Dashboard({ setPage, currentPage }) {
         </div>
       </div>
 
+      {/* Text Ads Slider */}
+      <div className="mb-6 p-4 bg-purple-500 rounded-xl text-white font-semibold text-center shadow-md">
+        {ads[currentAd]}
+      </div>
+
       {/* Quick Actions */}
       <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-3 gap-4 bg-white rounded-xl p-4">
+      <div className="grid grid-cols-3 gap-4 bg-white rounded-xl p-4 mb-16">
         {actions.map((action, index) => (
           <div
             key={index}
@@ -194,9 +210,7 @@ function Dashboard({ setPage, currentPage }) {
           <button
             key={index}
             onClick={() => setPage(item.page)}
-            className={`flex flex-col items-center text-xs ${
-              currentPage === item.page ? "text-purple-700 font-bold" : "text-gray-600"
-            }`}
+            className={`flex flex-col items-center text-xs ${currentPage === item.page ? "text-purple-700 font-bold" : "text-gray-600"}`}
           >
             {item.image && <img src={item.image} alt={item.name} className="w-6 h-6 mb-1" />}
             <span>{item.name}</span>
