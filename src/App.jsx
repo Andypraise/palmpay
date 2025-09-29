@@ -1,20 +1,22 @@
-import React, { useState } from "react";
-import Login from "./page/Login/Login";
-import Signup from "./page/Signup/Signup";
-import Dashboard from "./page/Dashboard/Dashboard";
-import ForgotPassword from "./page/ForgotPassword/ForgotPassword";
+import React from "react";
 
-function App() {
-  const [page, setPage] = useState("login");
+function Dashboard({ setPage }) {
+  const handleLogout = () => {
+    localStorage.removeItem("currentPage"); // clear saved page
+    setPage("login"); // go back to login
+  };
 
   return (
-    <>
-      {page === "login" && <Login setPage={setPage} />}
-      {page === "signup" && <Signup setPage={setPage} />}
-      {page === "dashboard" && <Dashboard setPage={setPage} />}
-      {page === "forgotPassword" && <ForgotPassword setPage={setPage} />}
-    </>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
+      <button
+        onClick={handleLogout}
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+      >
+        Logout
+      </button>
+    </div>
   );
 }
 
-export default App;
+export default Dashboard;

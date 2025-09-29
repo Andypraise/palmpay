@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react"; 
+import React, { useState, useEffect, useRef } from "react";
+import { Eye, EyeOff, LogOut } from "lucide-react"; 
 import profileImage from "../../assets/image3.png";
 import customerImage from "../../assets/image4.png";
 import codeImage from "../../assets/image12.png";
@@ -15,8 +15,9 @@ import tranImage from "../../assets/image17.png";
 function Dashboard({ setPage, currentPage }) {
   const [showBalance, setShowBalance] = useState(true);
   const [user, setUser] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // logout modal
+  const fileInputRef = useRef(null); // hidden file input ref
 
-  // Load user from localStorage
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
@@ -24,7 +25,27 @@ function Dashboard({ setPage, currentPage }) {
     }
   }, []);
 
-  // Quick Actions (dynamic array)
+  // Handle profile picture change
+  const handleProfileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const updatedUser = { ...user, profilePic: reader.result };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setPage("login");
+    setShowLogoutModal(false);
+  };
+
   const actions = [
     { name: "Airtime", image: timeImage, page: "airtime" },
     { name: "Data", image: dataImage, page: "data" },
@@ -34,7 +55,6 @@ function Dashboard({ setPage, currentPage }) {
     { name: "PulsePay", image: withImage, page: "pulsepay" },
   ];
 
-  // Bottom Nav (dynamic array)
   const navItems = [
     { name: "Home", image: homeImage, page: "dashboard" },
     { name: "Transactions", image: tranImage, page: "transactions" },
@@ -42,23 +62,41 @@ function Dashboard({ setPage, currentPage }) {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
+    <div className="bg-gray-100 min-h-screen p-4 relative">
       {/* Navbar */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
+          {/* Profile Image */}
           <img
             src={user?.profilePic || profileImage}
             alt="profile"
             className="w-[40px] h-[40px] rounded-full object-cover cursor-pointer"
+            onClick={() => fileInputRef.current.click()} // trigger file input
+          />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleProfileChange}
           />
           <h1 className="text-[20px] ml-2">
             Hi, {user?.name || user?.phone || "User"}
           </h1>
         </div>
-        <div className="flex">
-          <img src={customerImage} alt="" className="w-[30px] sm:w-[40px] h-[30px] sm:h-[40px] cursor-pointer mr-[5px]" />
-          <img src={codeImage} alt="" className="w-[30px] sm:w-[40px] h-[30px] sm:h-[40px] cursor-pointer mr-[5px]" />
-          <img src={notificationImage} alt="" className="w-[30px] sm:w-[40px] h-[30px] sm:h-[40px] cursor-pointer mr-[5px]" />
+
+        <div className="flex items-center gap-3">
+          <img src={customerImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
+          <img src={codeImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
+          <img src={notificationImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
+
+          {/* Logout Button */}
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="flex items-center gap-1 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
+          >
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
         </div>
       </div>
 
@@ -118,6 +156,30 @@ function Dashboard({ setPage, currentPage }) {
           </button>
         ))}
       </div>
+
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-[300px] text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Logout</h2>
+            <p className="mb-6">Are you sure you want to logout?</p>
+            <div className="flex justify-around">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded-lg"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
