@@ -1,5 +1,5 @@
 import React from "react";
-import palmImage from "../../assets/image-removebg-preview.png";
+import palmImage from "../../assets/image15.png";
 import "./Preloader.css"; 
 
 function Preloader() {

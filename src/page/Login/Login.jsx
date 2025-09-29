@@ -1,57 +1,89 @@
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react"; // 👁️ import icons
-import palmImage from "../../assets/image1.png";
+import { Eye, EyeOff } from "lucide-react";
+import palmImage from "../../assets/image13.png";
 
 function Login({ setPage }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleLogin = (e) => {
-    e.preventDefault(); // stop page refresh
-    setPage("dashboard"); // ✅ go to dashboard after login
+    e.preventDefault();
+
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!savedUser) {
+      setMessage("❌ No account found. Please sign up first.");
+      return;
+    }
+
+    // Check if email + password match
+    if (
+      savedUser.email === email.trim() &&
+      savedUser.password === password.trim()
+    ) {
+      setMessage("✅ Login successful!");
+
+      // ✅ Save logged in user session
+      localStorage.setItem("loggedInUser", JSON.stringify(savedUser));
+
+      setTimeout(() => {
+        setPage("dashboard");
+      }, 1500);
+    } else {
+      setMessage("❌ Invalid email or password.");
+    }
   };
 
   return (
     <div className="bg-[#6306b2] flex justify-center items-center">
       <div className="h-[100vh]">
-        {/* Palmpay image with automatic zoom animation */}
-        <div className="flex justify-center mt-7 mb-7">
+        {/* Logo */}
+        <div className="flex justify-center mt-2">
           <img
             src={palmImage}
-            alt="Palmpay"
-            className="w-[150px] h-auto zoom-animation"
+            alt="App Logo"
+            className="w-[150px] h-[120px] zoom-animation"
           />
         </div>
 
-        <div className="bg-white w-[350px] sm:w-[470px] h-[470px] p-8 rounded-[10px]">
+        <div className="bg-white w-[350px] sm:w-[470px] h-[470px] p-8 rounded-[10px] shadow-lg">
           <h2 className="text-[25px] font-bold">Login</h2>
+
           <form className="pt-[40px]" onSubmit={handleLogin}>
             {/* Email */}
-            <label>Email Address</label>
-            <br />
+            <label className="text-gray-700">Email Address</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Please enter your email address"
-              className="bg-[#f3f3f4] w-[280px] sm:w-[400px] h-[45px] p-2 rounded-[5px] mt-2 border border-gray-300 
-             focus:border-[#6205b3] focus:ring-0.1 focus:ring-[#6205b3] focus:outline-none"
+              className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] mt-2 border border-gray-300 
+              focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
               required
             />
-            <br />
-            <br />
 
             {/* Password */}
-            <div className="flex justify-between items-center">
-              <label>Password</label>
-              <a href="#" className="text-[#6205b3] text-sm">
+            <div className="flex justify-between items-center mt-5">
+              <label className="text-gray-700">Password</label>
+              <button
+                type="button"
+                onClick={() => setPage("forgotPassword")}
+                className="text-[#6205b3] text-sm hover:underline"
+              >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             <div className="relative mt-2">
               <input
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Please enter your password"
-                className="bg-[#f3f3f4] w-[290px] sm:w-[400px] h-[45px] p-2 rounded-[5px] pr-10 border border-gray-300 
-             focus:border-[#6205b3] focus:ring-0.1 focus:ring-[#6205b3] focus:outline-none"
+                className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] pr-10 border border-gray-300 
+                focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
                 required
               />
               <button
@@ -64,21 +96,28 @@ function Login({ setPage }) {
             </div>
 
             {/* Login Button */}
-            <div className="mt-11">
+            <div className="mt-10">
               <button
                 type="submit"
-                className="bg-[#6205b3] text-white w-[290px] sm:w-[400px] h-[45px] rounded-[5px] cursor-pointer hover:bg-[rgba(98,5,179,0.8)]"
+                className="bg-[#6205b3] text-white w-full h-[45px] rounded-[5px] cursor-pointer hover:bg-[rgba(98,5,179,0.85)]"
               >
                 Login
               </button>
             </div>
 
+            {/* Message */}
+            {message && (
+              <p className="mt-4 text-center text-sm text-gray-700">
+                {message}
+              </p>
+            )}
+
             {/* Sign up */}
-            <div className="flex pt-4">
-              <p className="text-[13px]">Don't have an account?</p>
+            <div className="flex pt-4 ">
+              <p className="text-[13px]">Don't have an account?&nbsp;</p>
               <button
                 type="button"
-                onClick={() => setPage("signup")} // ✅ make sure it's lowercase
+                onClick={() => setPage("signup")}
                 className="text-[#6205b3] text-[13px] hover:underline"
               >
                 Sign up

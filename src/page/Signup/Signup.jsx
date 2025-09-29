@@ -1,14 +1,36 @@
-import React, { useState } from "react";
-import palmImage from "../../assets/image2.png"; // Palmpay logo
+import React, { useState, useRef } from "react";
+import { Camera, Eye, EyeOff } from "lucide-react"; // ✅ icons
+import palmImage from "../../assets/image14.png"; // logo
 
 function Signup({ setPage }) {
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const fileInputRef = useRef(null);
+
+  // ✅ handle profile picture upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePic(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSignup = () => {
-    if (!phone) {
-      setMessage("Please enter your phone number");
+    if (!email || !phone || !password) {
+      setMessage("Please fill in all fields");
+      return;
+    }
+
+    if (phone.length !== 11) {
+      setMessage("Phone number must be 11 digits");
       return;
     }
 
@@ -17,9 +39,18 @@ function Signup({ setPage }) {
 
     // Simulate API delay (5 sec)
     setTimeout(() => {
+      const newUser = {
+        email,
+        phone,
+        password,
+        name: `User-${phone.slice(-4)}`,
+        profilePic: profilePic,
+      };
+      localStorage.setItem("user", JSON.stringify(newUser));
+
       setLoading(false);
       setMessage("✅ Account created successfully!");
-      // Redirect to dashboard after 2 sec
+
       setTimeout(() => {
         setPage("dashboard");
       }, 2000);
@@ -39,32 +70,69 @@ function Signup({ setPage }) {
       </div>
 
       {/* Logo */}
-      <div className="flex mt-4">
-        <img src={palmImage} alt="Palmpay Logo" className="w-[200px]" />
+      <div className="flex">
+        <img src={palmImage} alt="Logo" className="w-[150px] h-[150px]" />
       </div>
 
       {/* Title */}
-      <h2 className="text-xl text-gray-800 mt-6">
-        Let&apos;s Create an Account
-      </h2>
+      <h2 className="text-xl text-gray-800 mt-2">Let&apos;s Create an Account</h2>
+
+      {/* ✅ Profile Picture Upload FIRST (Facebook style) */}
+      <div className="mt-6 flex justify-center">
+        <div className="relative w-28 h-28 group">
+          <img
+            src={profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+            alt="Profile Preview"
+            className="w-28 h-28 rounded-full object-cover border-2 border-gray-300 cursor-pointer"
+            onClick={() => fileInputRef.current.click()}
+          />
+
+          {/* Hover Overlay */}
+          <div
+            onClick={() => fileInputRef.current.click()}
+            className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center 
+              opacity-0 group-hover:opacity-100 transition"
+          >
+            <Camera className="w-6 h-6 text-white" />
+          </div>
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/jpg"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      {/* Email Input */}
+      <div className="mt-6 w-full">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter email address"
+          className="w-full border border-gray-300 rounded-md h-[50px] px-3 outline-none text-gray-800 placeholder-gray-400"
+        />
+      </div>
 
       {/* Phone Input */}
-      <div className="mt-6 w-full">
+      <div className="mt-4 w-full">
         <div className="flex items-center border border-gray-300 rounded-md h-[50px] px-3">
-          {/* Country Flag + Code */}
           <div className="flex items-center space-x-2">
             <span className="text-2xl">🇳🇬</span>
             <span className="font-medium text-gray-700">+234</span>
           </div>
-          {/* Input */}
           <input
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
             placeholder="Enter phone number"
             className="ml-3 flex-1 outline-none text-gray-800 placeholder-gray-400"
+            maxLength={11}
           />
-          {/* Clear button */}
           {phone && (
             <button
               type="button"
@@ -77,8 +145,26 @@ function Signup({ setPage }) {
         </div>
       </div>
 
+      {/* Password Input */}
+      <div className="mt-4 w-full relative">
+        <input
+          type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter password"
+          className="w-full border border-gray-300 rounded-md h-[50px] px-3 outline-none text-gray-800 placeholder-gray-400"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-3 text-gray-600"
+        >
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button>
+      </div>
+
       {/* Sign Up Button */}
-      <div className="mt-8 w-full relative">
+      <div className="mt-8 mb-10 w-full relative">
         <button
           onClick={handleSignup}
           disabled={loading}
@@ -87,13 +173,11 @@ function Signup({ setPage }) {
         >
           {loading ? "Please wait..." : "Sign Up"}
         </button>
-        {/* Yellow Bonus Badge */}
         <span className="absolute right-4 top-[-14px] bg-yellow-400 text-[12px] px-2 py-1 rounded-full shadow">
           🎁 Get ₦5,450 Bonus
         </span>
       </div>
 
-      {/* Message */}
       {message && (
         <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
       )}
