@@ -99,7 +99,7 @@ function Signup({ setPage }) {
           <div
             onClick={() => fileInputRef.current.click()}
             className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center 
-              opacity-0 group-hover:opacity-100 transition "
+              opacity-0 group-hover:opacity-100 transition cursor-pointer"
           >
             <Camera className="w-6 h-6 text-white" />
           </div>

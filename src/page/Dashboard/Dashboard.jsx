@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, LogOut, Wifi } from "lucide-react"; 
+import { Eye, EyeOff, Wifi } from "lucide-react";
 import profileImage from "../../assets/image3.png";
 import customerImage from "../../assets/image4.png";
 import codeImage from "../../assets/image12.png";
@@ -15,28 +15,18 @@ import tranImage from "../../assets/image17.png";
 function Dashboard({ setPage, currentPage }) {
   const [showBalance, setShowBalance] = useState(true);
   const [user, setUser] = useState(null);
-  const [network, setNetwork] = useState(""); // Airtime network
+  const [network, setNetwork] = useState("");
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // Load user from localStorage
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
-
-      // If phone exists, detect network immediately
-      if (storedUser.phone) {
-        setNetwork(detectNetwork(storedUser.phone));
-      }
+      if (storedUser.phone) setNetwork(detectNetwork(storedUser.phone));
     }
   }, []);
 
-  // Logout Function
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setPage("login");
-  };
-
-  // Detect network function
   const detectNetwork = (phone) => {
     if (!phone) return "";
     const prefix = phone.slice(0, 4);
@@ -47,7 +37,6 @@ function Dashboard({ setPage, currentPage }) {
     return "";
   };
 
-  // Quick Actions
   const actions = [
     { name: "Airtime", image: timeImage, page: "airtime" },
     { name: "Data", image: dataImage, page: "data" },
@@ -57,49 +46,119 @@ function Dashboard({ setPage, currentPage }) {
     { name: "PulsePay", image: withImage, page: "pulsepay" },
   ];
 
-  // Bottom Nav
   const navItems = [
     { name: "Home", image: homeImage, page: "dashboard" },
     { name: "Transactions", image: tranImage, page: "transactions" },
-    { name: "Profile", image: profileImage, page: "profile" },
+    { name: "Profile", image: user?.profilePic || profileImage, page: "profile" },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setPage("login");
+  };
+
+  const handleProfileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const updatedUser = { ...user, profilePic: reader.result };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  if (!user) return null;
 
   return (
     <div className="bg-gray-100 min-h-screen p-4">
       {/* Navbar */}
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4 relative">
+          {/* Profile */}
           <img
-            src={user?.profilePic || profileImage}
+            src={user.profilePic || profileImage}
             alt="profile"
-            className="w-[40px] h-[40px] rounded-full object-cover cursor-pointer"
+            className="w-12 h-12 rounded-full border-2 border-purple-600 cursor-pointer"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
           />
-          <h1 className="text-[20px] ml-2">
-            Hi, {user?.name || user?.phone || "User"}
-          </h1>
+          <input
+            type="file"
+            id="profileInput"
+            className="hidden"
+            accept="image/*"
+            onChange={handleProfileChange}
+          />
+          <div>
+            <h1 className="text-[20px] font-semibold">
+              Hi, {user.name || user.phone || "User"}
+            </h1>
+            <p className="text-sm text-gray-600">Welcome back!</p>
+          </div>
+
+          {/* Profile dropdown */}
+          {showProfileMenu && (
+            <div className="absolute top-14 left-0 bg-white border rounded shadow p-3 w-44 z-50 flex flex-col">
+              <button
+                onClick={() => {
+                  document.getElementById("profileInput").click();
+                  setShowProfileMenu(false);
+                }}
+                className="text-left px-2 py-1 hover:bg-gray-100 rounded"
+              >
+                Change Profile
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutConfirm(true);
+                  setShowProfileMenu(false);
+                }}
+                className="text-left px-2 py-1 hover:bg-red-100 rounded text-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Action icons */}
         <div className="flex items-center gap-3">
-          <img src={customerImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
-          <img src={codeImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
-          <img src={notificationImage} alt="" className="w-[25px] h-[25px] sm:w-[30px] sm:h-[30px] cursor-pointer" />
-
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1 cursor-pointer text-black px-3 py-1 rounded-lg text-sm"
-          >
-            <LogOut className="w-4 h-4" /> Logout
-          </button>
+          <img src={customerImage} alt="" className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer" />
+          <img src={codeImage} alt="" className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer" />
+          <img src={notificationImage} alt="" className="w-6 h-6 sm:w-7 sm:h-7 cursor-pointer" />
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center gap-4">
+            <p className="text-lg font-medium">Are you sure you want to logout?</p>
+            <div className="flex gap-4">
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Balance Card */}
       <div className="bg-gradient-to-r from-purple-700 to-purple-500 text-white rounded-xl p-6 mb-8 shadow-lg">
         <p className="text-sm">Wallet Balance</p>
         <div className="flex justify-between items-center mt-2">
-          <h2 className="text-3xl font-bold">
-            {showBalance ? "₦5,450.00" : "******"}
-          </h2>
+          <h2 className="text-3xl font-bold">{showBalance ? "₦5,450.00" : "******"}</h2>
           <button
             onClick={() => setShowBalance(!showBalance)}
             className="ml-3 p-2 bg-purple-600 rounded-full"
@@ -115,14 +174,11 @@ function Dashboard({ setPage, currentPage }) {
         {actions.map((action, index) => (
           <div
             key={index}
-            onClick={() => {
-              setPage(action.page);
-            }}
+            onClick={() => setPage(action.page)}
             className="cursor-pointer rounded-xl p-4 flex flex-col items-center hover:bg-purple-50 transition"
           >
-            <img src={action.image} alt={action.name} className="w-[36px] h-[36px] mb-2" />
+            <img src={action.image} alt={action.name} className="w-9 h-9 mb-2" />
             <p className="text-sm font-medium">{action.name}</p>
-            {/* Show network icon for Airtime */}
             {action.name === "Airtime" && network && (
               <div className="mt-2 flex items-center text-xs text-gray-700 gap-1">
                 <Wifi size={16} /> {network}
@@ -142,7 +198,7 @@ function Dashboard({ setPage, currentPage }) {
               currentPage === item.page ? "text-purple-700 font-bold" : "text-gray-600"
             }`}
           >
-            {item.image ? <img src={item.image} alt={item.name} className="w-[24px] h-[24px] mb-1" /> : <span className="text-lg mb-1">{item.icon}</span>}
+            {item.image && <img src={item.image} alt={item.name} className="w-6 h-6 mb-1" />}
             <span>{item.name}</span>
           </button>
         ))}

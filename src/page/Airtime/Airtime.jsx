@@ -23,7 +23,7 @@ function Airtime({ setPage }) {
   useEffect(() => {
     if (phone.length >= 4) {
       const prefix = phone.slice(0, 4);
-      if (/^(0803|0806|0703|0706|0813|0816|0810|0814|0903|0906)$/.test(prefix)) setNetwork("MTN");
+      if (/^(0803|0806|0703|0706|0813|0816|0810|0814|0903|0906|0913)$/.test(prefix)) setNetwork("MTN");
       else if (/^(0805|0807|0811|0815|0905|0915)$/.test(prefix)) setNetwork("GLO");
       else if (/^(0802|0808|0708|0701|0812|0902|0907|0912)$/.test(prefix)) setNetwork("Airtel");
       else if (/^(0809|0817|0818|0909|0908)$/.test(prefix)) setNetwork("9mobile");

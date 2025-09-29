@@ -5,6 +5,7 @@ import Dashboard from "./page/Dashboard/Dashboard";
 import ForgotPassword from "./page/ForgotPassword/ForgotPassword";
 import Airtime from "./page/Airtime/Airtime"; // ✅ import Airtime page
 
+
 function App() {
   // Load last page from localStorage, default to login
   const [page, setPage] = useState(() => {
@@ -30,6 +31,7 @@ function App() {
       {page === "dashboard" && <Dashboard setPage={setPage} currentPage={page} />}
       {page === "forgotPassword" && <ForgotPassword setPage={setPage} />}
       {page === "airtime" && <Airtime setPage={setPage} user={user} />}
+       
     </>
   );
 }
