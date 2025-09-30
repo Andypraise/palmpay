@@ -3,26 +3,33 @@ import Login from "./page/Login/Login";
 import Signup from "./page/Signup/Signup";
 import Dashboard from "./page/Dashboard/Dashboard";
 import ForgotPassword from "./page/ForgotPassword/ForgotPassword";
-import Airtime from "./page/Airtime/Airtime"; // ✅ import Airtime page
-
+import Airtime from "./page/Airtime/Airtime";
+import Preloader from "./components/Preloader/Preloader"; // ✅ import Preloader
 
 function App() {
-  // Load last page from localStorage, default to login
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem("currentPage");
-    // Only allow valid pages
     return ["login", "signup", "dashboard", "forgotPassword", "airtime"].includes(saved)
       ? saved
       : "login";
   });
 
-  // Save page changes in localStorage
+  const [loading, setLoading] = useState(true); // ✅ loading state
+
   useEffect(() => {
     localStorage.setItem("currentPage", page);
+
+    // Simulate loading (e.g., fetch data or delay)
+    const timer = setTimeout(() => {
+      setLoading(false); // hide preloader after 1.5s
+    }, 5000);
+
+    return () => clearTimeout(timer);
   }, [page]);
 
-  // Load user from localStorage for Airtime page
   const user = JSON.parse(localStorage.getItem("user"));
+
+  if (loading) return <Preloader />; // show preloader while loading
 
   return (
     <>
@@ -31,7 +38,6 @@ function App() {
       {page === "dashboard" && <Dashboard setPage={setPage} currentPage={page} />}
       {page === "forgotPassword" && <ForgotPassword setPage={setPage} />}
       {page === "airtime" && <Airtime setPage={setPage} user={user} />}
-       
     </>
   );
 }
