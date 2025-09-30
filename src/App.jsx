@@ -1,38 +1,32 @@
 import React, { useState, useEffect } from "react";
+import Home from "./page/Home/Home";
 import Login from "./page/Login/Login";
 import Signup from "./page/Signup/Signup";
 import Dashboard from "./page/Dashboard/Dashboard";
 import ForgotPassword from "./page/ForgotPassword/ForgotPassword";
 import Airtime from "./page/Airtime/Airtime";
-import Preloader from "./components/Preloader/Preloader"; // ✅ import Preloader
+import Preloader from "./components/Preloader/Preloader";
 
 function App() {
-  const [page, setPage] = useState(() => {
-    const saved = localStorage.getItem("currentPage");
-    return ["login", "signup", "dashboard", "forgotPassword", "airtime"].includes(saved)
-      ? saved
-      : "login";
-  });
-
-  const [loading, setLoading] = useState(true); // ✅ loading state
+  const [page, setPage] = useState("home"); // 👈 Always start from Home
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("currentPage", page);
-
-    // Simulate loading (e.g., fetch data or delay)
+    // Preloader delay
     const timer = setTimeout(() => {
-      setLoading(false); // hide preloader after 1.5s
+      setLoading(false); 
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [page]);
+  }, []);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  if (loading) return <Preloader />; // show preloader while loading
+  if (loading) return <Preloader />;
 
   return (
     <>
+      {page === "home" && <Home setPage={setPage} />}
       {page === "login" && <Login setPage={setPage} />}
       {page === "signup" && <Signup setPage={setPage} />}
       {page === "dashboard" && <Dashboard setPage={setPage} currentPage={page} />}

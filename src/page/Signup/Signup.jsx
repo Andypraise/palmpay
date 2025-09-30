@@ -67,7 +67,7 @@ function Signup({ setPage }) {
       {/* Top Header */}
       <div className="w-full flex items-center">
         <button
-          onClick={() => setPage("login")}
+          onClick={() => setPage("home")}
           className="text-2xl text-gray-700 cursor-pointer"
         >
           ←Back
