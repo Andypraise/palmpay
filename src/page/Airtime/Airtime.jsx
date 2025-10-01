@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import mtnLogo from "../../assets/mtn.png"
-import gloLogo from "../../assets/glo.png"
-import airtelLogo from "../../assets/airtel.png"
-import mobileLogo from "../../assets/9mobile.png"
+import { useNavigate } from "react-router-dom";
+
+import mtnLogo from "../../assets/mtn.png";
+import gloLogo from "../../assets/glo.png";
+import airtelLogo from "../../assets/airtel.png";
+import mobileLogo from "../../assets/9mobile.png";
 
 // Online logos
 const logos = {
@@ -14,10 +16,11 @@ const logos = {
 
 const networks = ["MTN", "GLO", "Airtel", "9mobile"];
 
-function Airtime({ setPage }) {
+function Airtime() {
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("");
   const [network, setNetwork] = useState("");
+  const navigate = useNavigate();
 
   // Auto-detect network from phone
   useEffect(() => {
@@ -98,7 +101,7 @@ function Airtime({ setPage }) {
 
       {/* Back Button */}
       <button
-        onClick={() => setPage("dashboard")}
+        onClick={() => navigate("/dashboard")}
         className="w-full max-w-md py-3 mt-3 rounded-lg border border-purple-700 text-purple-700 font-semibold hover:bg-purple-50 transition"
       >
         Back to Dashboard

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom"; 
 import logoImage from "../../assets/logo.png";
 
-function Home({ setPage }) {
+function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const trades = [
     { id: 1, text: "💳 John bought ₦500 airtime" },
@@ -13,7 +15,7 @@ function Home({ setPage }) {
     { id: 4, text: "💰 Sarah funded wallet ₦10,000" },
   ];
 
-  // Show one trade at a time
+  // Auto-slide trade notifications
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % trades.length);
@@ -23,13 +25,12 @@ function Home({ setPage }) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-black via-purple-950 to-black text-white px-6 overflow-hidden relative">
-      {/* Glowing backdrop */}
+      {/* Glowing background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,215,0,0.15),transparent_60%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(138,43,226,0.2),transparent_70%)]"></div>
 
-      {/* Main content wrapper with z-10 so it's above the backgrounds */}
       <div className="relative z-10 flex flex-col items-center">
-        {/* Floating trade/chat messages (top) */}
+        {/* Floating trade/chat messages */}
         <div className="absolute top-[-60px] left-1/2 transform -translate-x-1/2 w-full max-w-md">
           <AnimatePresence mode="wait">
             <Motion.div
@@ -52,11 +53,7 @@ function Home({ setPage }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <img
-            src={logoImage}
-            alt="PulsePay Logo"
-            className="w-[85px] drop-shadow-lg"
-          />
+          <img src={logoImage} alt="PulsePay Logo" className="w-[85px] drop-shadow-lg" />
           <h1 className="text-5xl font-extrabold ml-3 bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
             PulsePay
           </h1>
@@ -70,11 +67,9 @@ function Home({ setPage }) {
           transition={{ delay: 0.5, duration: 1 }}
         >
           Experience{" "}
-          <span className="text-yellow-400 font-semibold">
-            luxury in payments
-          </span>
-          . With PulsePay, fund your wallet, buy airtime, and make transfers
-          seamlessly — fast, secure, and beautifully simple.
+          <span className="text-yellow-400 font-semibold">luxury in payments</span>.
+          With PulsePay, fund your wallet, buy airtime, and make transfers seamlessly — 
+          fast, secure, and beautifully simple.
         </Motion.p>
 
         {/* Buttons */}
@@ -85,22 +80,22 @@ function Home({ setPage }) {
           transition={{ delay: 1, duration: 1 }}
         >
           <button
-            onClick={() => setPage("signup")}
+            onClick={() => navigate("/signup")}
             className="px-7 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-lg shadow-lg hover:opacity-80 active:scale-95 transition cursor-pointer"
           >
             Sign Up
           </button>
           <button
-            onClick={() => setPage("login")}
+            onClick={() => navigate("/login")}
             className="px-7 py-3 border border-yellow-400 text-yellow-400 rounded-lg hover:bg-yellow-400 hover:text-black active:scale-95 transition cursor-pointer"
           >
             Login
           </button>
         </Motion.div>
 
-        {/* Get Started with shimmer */}
+        {/* Get Started */}
         <Motion.button
-          onClick={() => setPage("signup")}
+          onClick={() => navigate("/signup")}
           className="relative flex items-center gap-2 bg-gradient-to-r from-purple-700 to-purple-500 px-10 py-4 rounded-xl font-semibold cursor-pointer overflow-hidden hover:shadow-lg"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -112,7 +107,7 @@ function Home({ setPage }) {
         </Motion.button>
       </div>
 
-      {/* shimmer animation keyframes */}
+      {/* shimmer animation */}
       <style>
         {`
           @keyframes shimmer {

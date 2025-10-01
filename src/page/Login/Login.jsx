@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import palmImage from "../../assets/image13.png";
 
-function Login({ setPage }) {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -18,18 +20,15 @@ function Login({ setPage }) {
       return;
     }
 
-    // Check if email + password match
     if (
       savedUser.email === email.trim() &&
       savedUser.password === password.trim()
     ) {
       setMessage("✅ Login successful!");
-
-      // ✅ Save logged in user session
       localStorage.setItem("loggedInUser", JSON.stringify(savedUser));
 
       setTimeout(() => {
-        setPage("dashboard");
+        navigate("/dashboard"); // ✅ redirect
       }, 1500);
     } else {
       setMessage("❌ Invalid email or password.");
@@ -69,7 +68,7 @@ function Login({ setPage }) {
               <label className="text-gray-700">Password</label>
               <button
                 type="button"
-                onClick={() => setPage("forgotPassword")}
+                onClick={() => navigate("/forgot-password")}
                 className="text-[#6205b3] text-sm hover:underline"
               >
                 Forgot password?
@@ -113,11 +112,11 @@ function Login({ setPage }) {
             )}
 
             {/* Sign up */}
-            <div className="flex pt-4 ">
+            <div className="flex pt-4">
               <p className="text-[13px]">Don't have an account?&nbsp;</p>
               <button
                 type="button"
-                onClick={() => setPage("signup")}
+                onClick={() => navigate("/signup")}
                 className="text-[#6205b3] text-[13px] hover:underline"
               >
                 Sign up

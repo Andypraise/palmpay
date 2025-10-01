@@ -1,196 +1,147 @@
-import React, { useState, useRef } from "react";
-import { Camera, Eye, EyeOff } from "lucide-react"; // ✅ icons
-import palmImage from "../../assets/image14.png"; // logo
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // ✅ Router navigation
+import palmImage from "../../assets/image13.png";
 
-function Signup({ setPage }) {
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-  const [profilePic, setProfilePic] = useState(null);
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const fileInputRef = useRef(null);
 
-  // ✅ handle profile picture upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfilePic(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
+  const navigate = useNavigate(); // ✅ for navigation
 
-  // ✅ Valid Nigerian phone numbers regex (MTN, Glo, Airtel, 9mobile)
-  const phoneRegex = /^(0703|0706|0803|0806|0810|0813|0814|0816|0903|0906|0913|0705|0805|0815|0811|0905|0701|0708|0802|0808|0812|0901|0902|0904|0809|0817|0818|0909|0908)[0-9]{7}$/;
+  const handleSignup = (e) => {
+    e.preventDefault();
 
-  const handleSignup = () => {
-    if (!email || !phone || !password) {
-      setMessage("Please fill in all fields");
-      return;
-    }
-
-    if (!phoneRegex.test(phone)) {
-      setMessage(
-        "Invalid phone number. Must be 11 digits and a valid MTN, Glo, Airtel, or 9mobile number."
-      );
-      return;
-    }
-
-    setLoading(true);
-    setMessage("Please wait...");
-
-    // Simulate API delay (5 sec)
+    setLoading(true); // show loading
     setTimeout(() => {
+      // After 5 seconds create account
       const newUser = {
+        name: `${firstName} ${lastName}`,
         email,
-        phone,
         password,
-        name: `User-${phone.slice(-4)}`,
-        profilePic: profilePic,
+        phone: "",
+        balance: 0,
       };
+
       localStorage.setItem("user", JSON.stringify(newUser));
-
       setLoading(false);
-      setMessage("✅ Account created successfully!");
 
-      setTimeout(() => {
-        setPage("dashboard");
-      }, 2000);
+      navigate("/dashboard"); // ✅ Redirect to dashboard
     }, 5000);
   };
 
   return (
-    <div className="bg-white min-h-screen flex flex-col px-6 pt-12">
-      {/* Top Header */}
-      <div className="w-full flex items-center">
-        <button
-          onClick={() => setPage("home")}
-          className="text-2xl text-gray-700 cursor-pointer"
-        >
-          ←Back
-        </button>
-      </div>
-
-      {/* Logo */}
-      <div className="flex">
-        <img src={palmImage} alt="Logo" className="w-[150px] h-[150px]" />
-      </div>
-
-      {/* Title */}
-      <h2 className="text-xl text-gray-800 mt-2">Let's Create an Account</h2>
-
-      {/* ✅ Profile Picture Upload */}
-      <div className="mt-6 flex justify-center">
-        <div className="relative w-28 h-28 group">
+    <div className="bg-[#6306b2] flex justify-center items-center flex-col min-h-screen">
+      <div className="h-[100%]">
+        <div className="flex justify-center mt-1">
           <img
-            src={
-              profilePic ||
-              "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-            }
-            alt="Profile Preview"
-            className="w-28 h-28 rounded-full object-cover border-2 border-gray-300 cursor-pointer"
-            onClick={() => fileInputRef.current.click()}
-          />
-
-          {/* Hover Overlay */}
-          <div
-            onClick={() => fileInputRef.current.click()}
-            className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center 
-              opacity-0 group-hover:opacity-100 transition cursor-pointer"
-          >
-            <Camera className="w-6 h-6 text-white" />
-          </div>
-
-          {/* Hidden File Input */}
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg"
-            ref={fileInputRef}
-            onChange={handleImageUpload}
-            className="hidden"
+            src={palmImage}
+            alt="Pulsepay"
+            className="w-[130px] h-[120px] zoom-animation"
           />
         </div>
-      </div>
+        <div className="bg-white w-[350px] sm:w-[470px] h-auto p-8 rounded-[10px] shadow-lg mt-1">
+          <h2 className="text-[20px] font-bold mt-5 uppercase">
+            Let's Create an Account
+          </h2>
 
-      {/* Email Input */}
-      <div className="mt-6 w-full">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter email address"
-          className="w-full border border-gray-300 rounded-md h-[50px] px-3 outline-none text-gray-800 placeholder-gray-400"
-        />
-      </div>
+          {/* Signup Form */}
+          <form onSubmit={handleSignup} className="mt-5">
+            <label>First Name</label>
+            <input
+              type="text"
+              placeholder="Please enter your first name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] mt-2 border border-gray-300 
+              focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
+              required
+            />
+            <br /><br />
 
-      {/* Phone Input */}
-      <div className="mt-4 w-full">
-        <div className="flex items-center border border-gray-300 rounded-md h-[50px] px-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl">🇳🇬</span>
-            <span className="font-medium text-gray-700">+234</span>
-          </div>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) =>
-              setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))
-            }
-            placeholder="Enter phone number"
-            className="ml-3 flex-1 outline-none text-gray-800 placeholder-gray-400"
-            maxLength={11}
-          />
-          {phone && (
-            <button
-              type="button"
-              onClick={() => setPhone("")}
-              className="text-gray-400 text-lg"
-            >
-              ✕
-            </button>
-          )}
+            <label>Last Name</label>
+            <input
+              type="text"
+              placeholder="Please enter your last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] mt-2 border border-gray-300 
+              focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
+              required
+            />
+            <br /><br />
+
+            <label>Email Address</label>
+            <input
+              type="email"
+              placeholder="Please enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] mt-2 border border-gray-300 
+              focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
+              required
+            />
+            <br /><br />
+
+            {/* Password */}
+            <div className="flex justify-between items-center mt-2">
+              <label className="text-gray-700">Password</label>
+            </div>
+
+            <div className="relative mt-2">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Please enter your password"
+                className="bg-[#f3f3f4] w-full h-[45px] p-2 rounded-[5px] pr-10 border border-gray-300 
+                focus:border-[#6205b3] focus:ring-1 focus:ring-[#6205b3] focus:outline-none"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6205b3] focus:outline-none"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            <p className="text-[13px] mt-5">
+              By clicking the "Create My Account" button, you agree to PulsePay
+              Service Overview & Acceptable Use Policy
+            </p>
+
+            {/* Signup Button */}
+            <div className="mt-9">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full h-[45px] rounded-[5px] cursor-pointer text-white 
+                  ${loading ? "bg-gray-400" : "bg-[#6205b3] hover:bg-[rgba(98,5,179,0.85)]"}`}
+              >
+                {loading ? "Creating account..." : "Create My Account"}
+              </button>
+            </div>
+
+            {/* Already have account */}
+            <div className="flex pt-4 ">
+              <p className="text-[13px]">Already have an account?&nbsp;</p>
+              <button
+                type="button"
+                onClick={() => navigate("/login")} // ✅ Router navigation
+                className="text-[#6205b3] text-[13px] hover:underline"
+              >
+                Login
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-
-      {/* Password Input */}
-      <div className="mt-4 w-full relative">
-        <input
-          type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter password"
-          className="w-full border border-gray-300 rounded-md h-[50px] px-3 outline-none text-gray-800 placeholder-gray-400"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-3 text-gray-600"
-        >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button>
-      </div>
-
-      {/* Sign Up Button */}
-      <div className="mt-8 mb-10 w-full relative">
-        <button
-          onClick={handleSignup}
-          disabled={loading}
-          className={`w-full h-[50px] rounded-md text-white font-semibold text-lg transition cursor-pointer
-          ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#6205b3] hover:bg-[#4e0490]"}`}
-        >
-          {loading ? "Please wait..." : "Sign Up"}
-        </button>
-        <span className="absolute right-4 top-[-14px] bg-yellow-400 text-[12px] px-2 py-1 rounded-full shadow">
-          🎁 Get ₦5,450 Bonus
-        </span>
-      </div>
-
-      {message && (
-        <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
-      )}
     </div>
   );
 }

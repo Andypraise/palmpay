@@ -12,3 +12,13 @@
 .zoom-animation {
   animation: zoomInOut 3s ease-in-out infinite;
 }
+@keyframes slide {
+  0% { transform: translateY(100%); opacity: 0; }
+  20% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0; }
+}
+
+.animate-slide {
+  animation: slide 4s ease-in-out infinite;
+}

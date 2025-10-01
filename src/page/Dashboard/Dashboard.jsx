@@ -19,12 +19,12 @@ function Dashboard({ setPage, currentPage }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // Text slider state
+  // 🔹 Ads with links
   const ads = [
-    "🎯 Bet on your favorite sports now with Bet9ja! Win big today!",
-    "₿ Buy and sell Bitcoin easily on Luno. Start trading now!",
-    "⚡ Fast transactions with PulsePay. Send money instantly!",
-    "💰 Take a loan quickly and repay at your convenience!"
+    { text: "🎯 Bet on your favorite sports now with Bet9ja! Win big today!", link: "https://www.bet9ja.com" },
+    { text: "₿ Buy and sell Bitcoin easily on Luno. Start trading now!", link: "https://www.luno.com" },
+    { text: "⚡ Fast transactions with PulsePay. Send money instantly!", link: "https://www.opayweb.com" },
+    { text: "💰 Take a loan quickly and repay at your convenience!", link: "https://www.opayweb.com/loan" }
   ];
   const [currentAd, setCurrentAd] = useState(0);
 
@@ -36,8 +36,8 @@ function Dashboard({ setPage, currentPage }) {
     }
 
     const interval = setInterval(() => {
-      setCurrentAd(prev => (prev + 1) % ads.length);
-    }, 4000); // change ad every 4 seconds
+      setCurrentAd((prev) => (prev + 1) % ads.length);
+    }, 4000); // change ad every 4s
     return () => clearInterval(interval);
   }, []);
 
@@ -179,9 +179,26 @@ function Dashboard({ setPage, currentPage }) {
         </div>
       </div>
 
-      {/* Text Ads Slider */}
-      <div className="mb-6 p-4 bg-purple-500 rounded-xl text-white font-semibold text-center shadow-md">
-        {ads[currentAd]}
+      {/* 🔹 Clickable Ads Slider */}
+      <div className="mb-6 bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+        <a
+          href={ads[currentAd].link}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="bg-purple-600 text-white py-3 text-center font-semibold animate-slide">
+            {ads[currentAd].text}
+          </div>
+        </a>
+        {/* 🔹 Indicator Dots */}
+        <div className="flex justify-center gap-2 py-2">
+          {ads.map((_, index) => (
+            <span
+              key={index}
+              className={`w-2 h-2 rounded-full ${index === currentAd ? "bg-purple-600" : "bg-gray-300"}`}
+            ></span>
+          ))}
+        </div>
       </div>
 
       {/* Quick Actions */}
