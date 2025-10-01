@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function ForgotPassword({ setPage }) {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleReset = (e) => {
     e.preventDefault();
@@ -45,7 +47,7 @@ function ForgotPassword({ setPage }) {
 
         <div className="flex justify-center mt-4">
           <button
-            onClick={() => setPage("login")}
+            onClick={() => navigate("/login")}
             className="text-[#6205b3] text-sm hover:underline"
           >
              Back to Login
