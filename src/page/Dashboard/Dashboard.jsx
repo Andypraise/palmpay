@@ -226,7 +226,7 @@ function Dashboard({ setPage, currentPage }) {
             <h2 className="text-lg font-semibold mb-3">Customer Support</h2>
             <p className="text-sm text-gray-600 mb-4">Need help? Contact us:</p>
             <a
-              href="https://wa.me/2348123456789"
+              href="https://wa.me/2349133277350"
               target="_blank"
               rel="noopener noreferrer"
               className="block bg-green-600 text-white py-2 rounded mb-2 text-center"
