@@ -3,7 +3,7 @@ import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom"; 
 import logoImage from "../../assets/logo.png";
-
+import cbnImage from "../../assets/image-removebg-preview (1).png"
 function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
@@ -114,7 +114,10 @@ function Home() {
             100% { transform: translateX(100%); }
           }
         `}
+        
       </style>
+      <p className="flex items-center font-bold gap-1.5 pt-[70px]">Licensed by CBN <img src={cbnImage} alt="" className="w-[20px] h-[25px]" /> | Insured by |NDIC</p>
+     
     </div>
   );
 }
