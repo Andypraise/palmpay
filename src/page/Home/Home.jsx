@@ -9,10 +9,10 @@ function Home() {
   const navigate = useNavigate();
 
   const trades = [
-    { id: 1, text: "💳 John bought ₦500 airtime" },
-    { id: 2, text: "⚡ Ada transferred ₦5,000" },
-    { id: 3, text: "📱 Uche bought 2GB data" },
-    { id: 4, text: "💰 Sarah funded wallet ₦10,000" },
+    { id: 1, text: "💳 John bought ₦1000 airtime" },
+    { id: 2, text: "⚡ Ada transferred ₦10,000" },
+    { id: 3, text: "📱 Uche bought 4GB data" },
+    { id: 4, text: "💰 Sarah funded wallet ₦20,000" },
   ];
 
   // Auto-slide trade notifications
@@ -66,10 +66,10 @@ function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
         >
-          Experience{" "}
-          <span className="text-yellow-400 font-semibold">luxury in payments</span>.
+          Redefining{" "}
+          <span className="text-yellow-400 font-semibold"> luxury in digital payments.</span>.
           With PulsePay, fund your wallet, buy airtime, and make transfers seamlessly — 
-          fast, secure, and beautifully simple.
+          fast, secure,reliable and beautifully simple.
         </Motion.p>
 
         {/* Buttons */}
@@ -116,7 +116,7 @@ function Home() {
         `}
         
       </style>
-      <p className="flex items-center font-bold gap-1.5 pt-[70px]">Licensed by CBN <img src={cbnImage} alt="" className="w-[20px] h-[25px]" /> | Insured by |NDIC</p>
+      <p className="flex items-center font-bold gap-1.5 pt-[70px]">CBN Licensed  <img src={cbnImage} alt="" className="w-[20px] h-[25px]" /> • NDIC Insured</p>
      
     </div>
   );
